@@ -64,8 +64,8 @@
                                 <div class="form loginBox">
                                     <form method="post" action="/login" accept-charset="UTF-8">
                                         <div class="form-group">
-                                            <label>Username</label>
-                                            <input type="text" class="form-control" name="username">
+                                            <label>Email</label>
+                                            <input type="text" class="form-control" name="email">
                                         </div>
                                         <div class="form-group">
                                             <label>Password</label>
@@ -83,27 +83,29 @@
                         <div class="box">
                             <div class="content registerBox" style="display:none;">
                                 <div class="form">
-                                    <form /*method="POST"*/ html="{:multipart=>true}" data-remote="true" 
-                                        /*action = "/sendEmail"*/ accept-charset="UTF-8">
-                                        <div class="form-group">
-                                            <label>Username</label>
-                                            <input type="text" class="form-control" name="username-reg">
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Password</label>
-                                            <input type="password" class="form-control" name="password-reg">
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Email</label>
-                                            <input type="text" class="form-control" name="email">
-                                        </div>
-                                        <center>
-                                            <button type="submit" id = "sign-up" class="btn btn-warning btn-lg">Signup</button>
-                                        </center>
-                                        <p id = "res"></p>
-                                        <!-- <input class="btn btn-default btn-register" type="button" value="Create account"
+                                    <!-- <form /*method="POST"*/ html="{:multipart=>true}" data-remote="true" 
+                                        /*action = "/sendEmail"*/ accept-charset="UTF-8"> -->
+                                    <div class="form-group">
+                                        <label>Username</label>
+                                        <input type="text" class="form-control" name="username-reg">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Password</label>
+                                        <input type="password" class="form-control" name="password-reg">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Email</label>
+                                        <input type="text" class="form-control" name="email-reg" id="email-reg">
+                                    </div>
+                                    <p id="res"></p>
+                                    <center>
+                                        <button  id="sign-up"
+                                            class="btn btn-warning btn-lg">Signup</button>
+                                    </center>
+
+                                    <!-- <input class="btn btn-default btn-register" type="button" value="Create account"
                                             name="commit"> -->
-                                    </form> 
+                                    <!-- </form>  -->
                                 </div>
                             </div>
                         </div>
@@ -124,11 +126,39 @@
         </div>
     </div>
     <script>
-        $('#sign-up').click(function(){
-            $.post('/sendEmail',{email:  $('input[name="email"]').val(),username : $('input[name="username-reg"]').val(), password : $('input[name="password-reg"]').val()});
-            document.getElementById('res').innerHTML=result;
+        $('#sign-up').click(function () {
+            $.ajax({
+                url: '/sendEmail',
+                method: 'POST',
+                data: { email: $('input[name="email-reg"]').val(), username: $('input[name="username-reg"]').val(), password: $('input[name="password-reg"]').val() },
+                success: function (data) {
+                    document.getElementById("res").innerHTML = data.res;
+                }
+            });
         });
     </script>
+    <!-- // $('#sign-up').on('click',function(){
+    // var $res=$('#res');
+    // var $email=$('input[name="email"]').val();
+    // $.ajax({
+    // type:'POST',
+    // url:'/sendEmail',
+    // data:email,
+    // success:function(){
+    // $res.append("check success");
+    // },
+    // error:function()
+    // {
+    // alert('error');
+    // }
+    // });
+    // });
+    // $('#sign-up').click(function(){
+    // $.post('/sendEmail',{email: $('input[name="email"]').val(),username : $('input[name="username-reg"]').val(),
+    password : $('input[name="password-reg"]').val()});
+    // console.log("asdfasdf");
+    // document.getElementById('res').innerHTML='abc';
+    // }); -->
 </body>
 
 </html>

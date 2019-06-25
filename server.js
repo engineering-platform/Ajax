@@ -10,10 +10,10 @@ var bodyParser = require('body-parser');
 var session = require('express-session');
 var configDB = require('./config/database.js');
 var path = require('path');
-
+var nodemailer=require('nodemailer');
 mongoose.connect(configDB.url);
 
-require('./config/passport')(passport);
+require('./config/passport')(passport,session);
 
 app.use(morgan('dev'));
 app.use(cookieParser());
@@ -32,6 +32,6 @@ app.use(passport.session());
 app.use(flash());
 
 
-require('./app/routes.js')(app, passport);
+require('./app/routes.js')(app, passport,session,nodemailer);
 
 app.listen(port);

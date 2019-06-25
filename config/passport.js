@@ -4,7 +4,7 @@ var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var User = require('../app/models/user');
 var configAuth = require('./auth'); // use this one for testing
 
-module.exports = function (passport) {
+module.exports = function (passport,session) {
 
     passport.serializeUser(function (user, done) {
         done(null, user.id);
@@ -17,14 +17,14 @@ module.exports = function (passport) {
     });
 
     passport.use('local-login', new LocalStrategy({
-        usernameField: 'username',
+        usernameField: 'email',
         passwordField: 'password',
         passReqToCallback: true // allows us to pass in the req from our route (lets us check if a user is logged in or not)
     },
-        function (req, username, password, done) {
+        function (req, email, password, done) {
             // asynchronous
             process.nextTick(function () {
-                User.findOne({ 'local.username': username }, function (err, user) {
+                User.findOne({ 'local.email': email }, function (err, user) {
                     if (err)
                         return done(err);
                     if (!user)
@@ -39,16 +39,16 @@ module.exports = function (passport) {
         }));
 
     passport.use('local-signup', new LocalStrategy({
-        usernameField: 'username',
-        passwordField: 'password',
+        // usernameField: req.session.email,
+        // passwordField: req.session.password,
         passReqToCallback: true // allows us to pass in the req from our route (lets us check if a user is logged in or not)
     },
-        function (req, username, password, done) {
-            
+        function (req, email, password, done) {
+            console.log("hiii");
             // asynchronous
             process.nextTick(function () {
                 if (!req.user) {
-                    User.findOne({ 'local.username': username }, function (err, user) {
+                    User.findOne({ 'local.email': email }, function (err, user) {
                         if (err)
                             return done(err);
                         if (user) {
@@ -56,9 +56,9 @@ module.exports = function (passport) {
                         } else {
                             var newUser = new User();
                             newUser.type = 'local';
-                            newUser.local.username = username;
-                            newUser.local.email = req.body.email;
-                            newUser.local.password = newUser.generateHash(password);
+                            newUser.local.username = req.session.username;
+                            newUser.local.email = email;
+                            newUser.local.password = newUser.generateHash(req.session.password);
                             newUser.save(function (err) {
                                 if (err)
                                     return done(err);
@@ -67,7 +67,7 @@ module.exports = function (passport) {
                         }
                     });
                 } else if (!req.user.local.username) {
-                    User.findOne({ 'local.username': username }, function (err, user) {
+                    User.findOne({ 'local.email': email }, function (err, user) {
                         if (err)
                             return done(err);
                         if (user) {
@@ -75,9 +75,9 @@ module.exports = function (passport) {
                         } else {
                             var user = req.user;
                             user.type = 'local';
-                            user.local.username = username;
-                            user.local.email = req.body.email;
-                            user.local.password = user.generateHash(password);
+                            user.local.username = req.session.username;
+                            user.local.email = email;
+                            user.local.password = user.generateHash(req.session.password);
                             user.save(function (err) {
                                 if (err)
                                     return done(err);
